@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-import os
 from pathlib import Path
 
 def dwim(request, path):
@@ -9,30 +8,15 @@ def dwim(request, path):
     # Construct the full path
     full_path = project_root / path
     
-    # Check if the path exists
-    if not full_path.exists():
-        return HttpResponse(f"No files found matching the path: {path}")
-    
-    # If it's a file, return its name
-    if full_path.is_file():
-        return HttpResponse(f"File found: {full_path.name}")
-    
-    # If it's a directory, list all files (of any suffix) in it
-    if full_path.is_dir():
-        files = [f.name for f in full_path.iterdir() if f.is_file()]
-        if files:
-            file_list = "\n".join(files)
-            return HttpResponse(f"Files found in {path}:\n{file_list}")
-        else:
-            return HttpResponse(f"No files found in the directory: {path}")
-    
-    # If it's neither a file nor a directory, it might be a pattern
+    # Get the parent directory and the file name (without extension)
     parent_dir = full_path.parent
-    pattern = full_path.name
-    matching_files = list(parent_dir.glob(pattern))
+    file_name_without_ext = full_path.stem
+    
+    # Find all files in the parent directory that start with the given name
+    matching_files = list(parent_dir.glob(f"{file_name_without_ext}.*"))
     
     if matching_files:
         file_list = "\n".join([f.name for f in matching_files])
-        return HttpResponse(f"Files matching {pattern} in {parent_dir}:\n{file_list}")
+        return HttpResponse(f"Files matching {file_name_without_ext}.* in {parent_dir}:\n{file_list}")
     else:
-        return HttpResponse(f"No files found matching the pattern: {pattern}")
+        return HttpResponse(f"No files found matching {file_name_without_ext}.* in {parent_dir}")
