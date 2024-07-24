@@ -1,8 +1,10 @@
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from pathlib import Path
 import importlib
 import sys
 
+@csrf_exempt
 def dwim(request, path):
     # Get the project root directory (parent of kappa folder)
     project_root = Path(__file__).resolve().parent.parent

@@ -1,6 +1,5 @@
 from django.http import HttpResponse
 from twilio.twiml.messaging_response import MessagingResponse
-from django.views.decorators.csrf import csrf_exempt
 import os
 from openai import OpenAI
 import psycopg
