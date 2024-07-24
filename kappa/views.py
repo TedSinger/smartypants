@@ -23,9 +23,6 @@ def dwim(request, path):
         module_name = module_path.replace('/', '.')
         
         try:
-            # Add the project root to sys.path temporarily
-            sys.path.insert(0, str(project_root))
-            
             # Import the module
             module = importlib.import_module(module_name)
             
@@ -36,9 +33,6 @@ def dwim(request, path):
                 return HttpResponse(f"The module {module_name} does not have a handle_request function.")
         except ImportError:
             return HttpResponse(f"Failed to import module {module_name}")
-        finally:
-            # Remove the project root from sys.path
-            sys.path.pop(0)
     elif matching_files:
         file_list = "\n".join([f.name for f in matching_files])
         return HttpResponse(f"Files matching {file_name_without_ext}.* in {parent_dir}:\n{file_list}")
