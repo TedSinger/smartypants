@@ -39,9 +39,7 @@ def record_messages(tel, body, completion):
                 (%(tel)s, true, current_timestamp, %(body)s),
                 (%(tel)s, false, current_timestamp + interval '1 second', %(completion)s)''', {"tel":tel, "body":body, "completion":completion})
 
-
-@csrf_exempt
-def index(request):
+def handle_request(request):
     qd = request.POST
     messages = get_messages(qd["From"], qd["Body"])
     completion = complete(messages)
