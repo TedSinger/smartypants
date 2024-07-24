@@ -4,10 +4,13 @@ from pathlib import Path
 import importlib
 import sys
 from jinja2 import Environment, FileSystemLoader
+import pugsql
 
 
 def dwim(request, path):
-    # Get the project root directory (parent of kappa folder)
+    # Database connection
+    db = pugsql.module()
+    db.connect('sqlite:///tmp/foo.db')
     project_root = Path(__file__).resolve().parent.parent
     
     # Construct the full path
@@ -52,7 +55,19 @@ def dwim(request, path):
             # Render the template
             rendered_content = template.render(context)
             return HttpResponse(rendered_content)
-    elif matching_files:
+    # Check for .sql files in parent directories
+    for parent in full_path.parents:
+        sql_files = list(parent.glob("*.sql"))
+        if sql_files:
+            sql_file = sql_files[0]
+            db.load_sql(sql_file)
+            query_name = full_path.relative_to(parent).with_suffix('').as_posix().replace('/', '_')
+            if query_name in db.queries:
+                query_params = request.GET.dict()
+                result = db.queries[query_name](**query_params)
+                return HttpResponse(str(result))
+            else:
+                return HttpResponse(f"No query named {query_name} found in {sql_file}")
         file_list = "\n".join([f.name for f in matching_files])
         return HttpResponse(f"Files matching {file_name_without_ext}.* in {parent_dir}:\n{file_list}")
     else:
