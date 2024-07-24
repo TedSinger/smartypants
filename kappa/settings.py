@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'default-insecure-key-for-dev')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', "onrender.com"]  # Add your domain here
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', "*.onrender.com"]  # Add your domain here
 
 
 # Application definition
