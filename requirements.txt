@@ -3,4 +3,4 @@ openai
 psycopg
 twilio
 django
-gunicorn
+uvicorn

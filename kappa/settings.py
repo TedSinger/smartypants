@@ -71,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'kappa.wsgi.application'
+ASGI_APPLICATION = 'kappa.asgi.application'
 
 
 # Database
