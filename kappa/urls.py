@@ -15,10 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from . import sms, views
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('sms/', sms.index),
     re_path(r'^kappa/(?P<path>.*)$', views.dwim),
 ]
