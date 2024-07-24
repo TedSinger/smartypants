@@ -64,7 +64,18 @@ def dwim(request, path):
             query_name = full_path.relative_to(parent).with_suffix('').as_posix().replace('/', '_')
             if query_name in db.queries:
                 query_params = request.GET.dict()
-                result = db.queries[query_name](**query_params)
+                if request.body:
+                    import json
+                    try:
+                        body_data = json.loads(request.body)
+                        if isinstance(body_data, list) and all(isinstance(item, dict) for item in body_data):
+                            result = db.queries[query_name](body_data)
+                        else:
+                            return HttpResponse("Request body must be a list of dictionaries.", status=400)
+                    except json.JSONDecodeError:
+                        return HttpResponse("Invalid JSON in request body.", status=400)
+                else:
+                    result = db.queries[query_name](**query_params)
                 return HttpResponse(str(result))
             else:
                 return HttpResponse(f"No query named {query_name} found in {sql_file}")
