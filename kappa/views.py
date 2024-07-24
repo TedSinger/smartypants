@@ -1,7 +1,9 @@
 from django.http import HttpResponse
+from django.template import Context
 from pathlib import Path
 import importlib
 import sys
+from jinja2 import Environment, FileSystemLoader
 
 
 def dwim(request, path):
@@ -18,22 +20,38 @@ def dwim(request, path):
     # Find all files in the parent directory that start with the given name
     matching_files = list(parent_dir.glob(f"{file_name_without_ext}.*"))
     
-    if len(matching_files) == 1 and matching_files[0].suffix == '.py':
-        # If there's exactly one matching file and it's a .py file
-        module_path = str(matching_files[0].relative_to(project_root).with_suffix(''))
-        module_name = module_path.replace('/', '.')
-        
-        try:
-            # Import the module
-            module = importlib.import_module(module_name)
+    if len(matching_files) == 1:
+        matching_file = matching_files[0]
+        if matching_file.suffix == '.py':
+            # If there's exactly one matching file and it's a .py file
+            module_path = str(matching_file.relative_to(project_root).with_suffix(''))
+            module_name = module_path.replace('/', '.')
             
-            # Call the handle_request function
-            if hasattr(module, 'handle_request'):
-                return module.handle_request(request)
-            else:
-                return HttpResponse(f"The module {module_name} does not have a handle_request function.")
-        except ImportError:
-            return HttpResponse(f"Failed to import module {module_name}")
+            try:
+                # Import the module
+                module = importlib.import_module(module_name)
+                
+                # Call the handle_request function
+                if hasattr(module, 'handle_request'):
+                    return module.handle_request(request)
+                else:
+                    return HttpResponse(f"The module {module_name} does not have a handle_request function.")
+            except ImportError:
+                return HttpResponse(f"Failed to import module {module_name}")
+        elif matching_file.suffix == '.jinja':
+            # If there's exactly one matching file and it's a .jinja file
+            env = Environment(loader=FileSystemLoader(parent_dir))
+            template = env.get_template(matching_file.name)
+            
+            # Create a context for the template
+            context = {
+                'request': request,
+                # Add any other context variables you want to pass to the template
+            }
+            
+            # Render the template
+            rendered_content = template.render(context)
+            return HttpResponse(rendered_content)
     elif matching_files:
         file_list = "\n".join([f.name for f in matching_files])
         return HttpResponse(f"Files matching {file_name_without_ext}.* in {parent_dir}:\n{file_list}")

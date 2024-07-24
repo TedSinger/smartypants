@@ -4,3 +4,4 @@ psycopg
 twilio
 django
 uvicorn
+Jinja2==3.1.2
