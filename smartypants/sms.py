@@ -1,5 +1,4 @@
-from django.http import HttpResponse
-from twilio.twiml.messaging_response import MessagingResponse
+
 import os
 from openai import OpenAI
 import psycopg
@@ -11,7 +10,7 @@ economics. If you must disclaim, do so only once, at the start, with a brief sta
 guess:' or 'People disagree. Here are the main viewpoints:'. Do not waffle, hedge, or add vague qualifiers. Do acknowledge
 specific tradeoffs and common complications, but do not defer to generic platitudes like 'Be careful' or 'Do your own research'."""
 
-def get_messages(tel, body):
+def load_past_messages(tel, body):
     messages = [{"role": "system", "content": PROMPT}]
     pgpass = os.getenv("PGPASSWORD")
     print(os.getenv("PGHOST"))
@@ -31,18 +30,9 @@ def complete(messages):
     )
     return completion.choices[0].message.content
 
-def record_messages(tel, body, completion):
+def record_new_message(tel, body, completion):
     with psycopg.connect("dbname=smartypants user=twilio") as conn:
         with conn.cursor() as cursor:
             cursor.execute('''insert into messages (tel, is_user, sent, body) values
                 (%(tel)s, true, current_timestamp, %(body)s),
                 (%(tel)s, false, current_timestamp + interval '1 second', %(completion)s)''', {"tel":tel, "body":body, "completion":completion})
-
-def handle_request(request):
-    qd = request.POST
-    messages = get_messages(qd["From"], qd["Body"])
-    completion = complete(messages)
-    record_messages(qd["From"], qd["Body"], completion)
-    resp = MessagingResponse()
-    resp.message(completion)
-    return HttpResponse(str(resp))

@@ -1,3 +1,7 @@
 /kappa/__pycache__/
 /static/
 .aider*
+
+smartypants/__pycache__
+/__pycache__/
+/.sesskey
