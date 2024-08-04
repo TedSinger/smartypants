@@ -18,3 +18,5 @@ CREATE TABLE public.messages (
     body text
 );
 ALTER TABLE public.messages OWNER TO twilio;
+CREATE INDEX messages_tel ON public.messages USING btree (tel);
+ALTER TABLE public.messages CLUSTER ON messages_tel;
