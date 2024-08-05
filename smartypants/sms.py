@@ -1,9 +1,6 @@
-
 import uuid
 from db import get_db_connection
-import psycopg
 from twilio.twiml.messaging_response import MessagingResponse
-from smartypants.answer import load_past_messages, complete
 
 def generate_purchase_url(tel):
     unique_id = str(uuid.uuid4())
