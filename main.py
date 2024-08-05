@@ -8,15 +8,14 @@ app, rt = fast_app()
 
 @app.post("/smartypants/sms")
 def answer_text_message(From:str, Body:str):
+    resp = MessagingResponse()
     messages = load_past_messages(From, Body)
     if check_message_limit(From):
         purchase_url = generate_purchase_url(From)
-        return f"Message limit exceeded. Please purchase more messages: {purchase_url}"
+        resp.message(f"Message limit exceeded. Please purchase more messages: {purchase_url}")
     else:
-        completion = complete(messages)
-    record_new_message(From, Body, completion)
-    resp = MessagingResponse()
-    resp.message(completion)
+        completion = answer(From, Body)
+        record_new_message(From, Body, completion)
     return str(resp)
 
 @app.get("/")
