@@ -42,4 +42,3 @@ def purchase_more_messages(unique_id: str):
             cursor.execute('''INSERT INTO purchases (tel, purchase_date, purchase_type, message_count) VALUES
                 (%(tel)s, current_timestamp, 'promotion', 100)''', {"tel": tel})
     return "Purchase successful. You have been credited with 100 messages."
-    serve()
