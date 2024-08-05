@@ -1,6 +1,6 @@
 from fasthtml.common import fast_app, serve, Html, Head, Title, Body, H1, P
 from smartypants.answer import load_past_messages, complete
-from smartypants.pay import record_new_message, generate_purchase_url
+from smartypants.pay import record_new_message, generate_purchase_url, check_message_limit
 from db import get_db_connection
 from twilio.twiml.messaging_response import MessagingResponse
 
@@ -9,7 +9,11 @@ app, rt = fast_app()
 @app.post("/smartypants/sms")
 def answer_text_message(From:str, Body:str):
     messages = load_past_messages(From, Body)
-    completion = complete(messages)
+    if check_message_limit(From):
+        purchase_url = generate_purchase_url(From)
+        return f"Message limit exceeded. Please purchase more messages: {purchase_url}"
+    else:
+        completion = complete(messages)
     record_new_message(From, Body, completion)
     resp = MessagingResponse()
     resp.message(completion)
