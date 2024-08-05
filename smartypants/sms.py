@@ -21,9 +21,6 @@ def check_message_limit(tel):
     return False
 
 def record_new_message(tel, body, completion):
-    if check_message_limit(tel):
-        purchase_url = generate_purchase_url(tel)
-        completion += f"\n\nYou have exceeded your message limit. Please purchase more messages here: {purchase_url}"
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('''insert into messages (tel, is_user, sent, body) values
