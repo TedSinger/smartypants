@@ -1,5 +1,6 @@
 from fasthtml.common import fast_app, serve, Html, Head, Title, Body, H1, P
-from smartypants.sms import load_past_messages, complete, record_new_message, generate_purchase_url
+from smartypants.answer import load_past_messages, complete
+from smartypants.pay import record_new_message, generate_purchase_url
 from db import get_db_connection
 from twilio.twiml.messaging_response import MessagingResponse
 
