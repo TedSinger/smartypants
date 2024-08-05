@@ -7,4 +7,3 @@ CREATE TABLE public.purchases (
 
 ALTER TABLE public.purchases OWNER TO twilio;
 CREATE INDEX purchases_tel ON public.purchases USING btree (tel);
-ALTER TABLE public.purchases CLUSTER ON purchases_tel;
