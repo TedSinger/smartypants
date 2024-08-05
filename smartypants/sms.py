@@ -34,6 +34,10 @@ def complete(messages):
 
 def generate_purchase_url(tel):
     unique_id = str(uuid.uuid4())
+    pgpass = os.getenv("PGPASSWORD")
+    with psycopg.connect("dbname=smartypants user=twilio", sslmode='require', host=os.getenv("PGHOST"), password=pgpass, port=5432) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('''INSERT INTO purchase_offers (unique_id, tel) VALUES (%s, %s)''', (unique_id, tel))
     return f"http://example.com/purchase/{unique_id}"
 
 def check_message_limit(tel):

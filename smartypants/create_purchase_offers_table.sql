@@ -1,0 +1,5 @@
+CREATE TABLE purchase_offers (
+    unique_id UUID PRIMARY KEY,
+    tel VARCHAR(20) NOT NULL,
+    offer_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
