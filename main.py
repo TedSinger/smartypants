@@ -21,8 +21,15 @@ def foo(y:str, x:int):
 
 @app.get("/purchase/{unique_id}")
 def purchase_more_messages(unique_id: str):
-    # This is a placeholder implementation. In a real application, you would verify the unique_id.
-    tel = "user's phone number"  # Retrieve the user's phone number associated with the unique_id
+    pgpass = os.getenv("PGPASSWORD")
+    with psycopg.connect("dbname=smartypants user=twilio", sslmode='require', host=os.getenv("PGHOST"), password=pgpass, port=5432) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT tel FROM purchase_offers WHERE unique_id = %s', [unique_id])
+            result = cursor.fetchone()
+            if result:
+                tel = result[0]
+            else:
+                return "Invalid purchase link."
     with psycopg.connect("dbname=smartypants user=twilio") as conn:
         with conn.cursor() as cursor:
             cursor.execute('''INSERT INTO purchases (tel, purchase_date, purchase_type, message_count) VALUES
