@@ -2,6 +2,7 @@
 import os
 import uuid
 from openai import OpenAI
+from db import get_db_connection
 import psycopg
 from twilio.twiml.messaging_response import MessagingResponse
 
