@@ -1,7 +1,9 @@
 
 import os
+import uuid
 from openai import OpenAI
 import psycopg
+from twilio.twiml.messaging_response import MessagingResponse
 
 client = OpenAI()
 PROMPT = """You are answering in SMS. Be brief, direct, precise. Prefer short words and active voice. Prefer scientifically
@@ -30,7 +32,26 @@ def complete(messages):
     )
     return completion.choices[0].message.content
 
+def generate_purchase_url(tel):
+    unique_id = str(uuid.uuid4())
+    return f"http://example.com/purchase/{unique_id}"
+
+def check_message_limit(tel):
+    pgpass = os.getenv("PGPASSWORD")
+    with psycopg.connect("dbname=smartypants user=twilio", sslmode='require', host=os.getenv("PGHOST"), password=pgpass, port=5432) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT COUNT(*) FROM messages WHERE tel = %s', [tel])
+            message_count = cursor.fetchone()[0]
+            cursor.execute('SELECT COALESCE(SUM(message_count), 0) FROM purchases WHERE tel = %s', [tel])
+            purchase_count = cursor.fetchone()[0]
+            if message_count > purchase_count + 50:
+                return True
+    return False
+
 def record_new_message(tel, body, completion):
+    if check_message_limit(tel):
+        purchase_url = generate_purchase_url(tel)
+        completion += f"\n\nYou have exceeded your message limit. Please purchase more messages here: {purchase_url}"
     with psycopg.connect("dbname=smartypants user=twilio") as conn:
         with conn.cursor() as cursor:
             cursor.execute('''insert into messages (tel, is_user, sent, body) values
