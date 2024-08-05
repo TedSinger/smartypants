@@ -1,5 +1,6 @@
 from fasthtml.common import fast_app, serve
 from smartypants.sms import load_past_messages, complete, record_new_message, generate_purchase_url
+import os
 import psycopg
 from twilio.twiml.messaging_response import MessagingResponse
 
