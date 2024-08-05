@@ -1,7 +1,6 @@
 from fasthtml.common import fast_app, serve
 from smartypants.sms import load_past_messages, complete, record_new_message, generate_purchase_url
-import os
-import psycopg
+from db import get_db_connection
 from twilio.twiml.messaging_response import MessagingResponse
 
 app, rt = fast_app()
@@ -22,8 +21,7 @@ def foo(y:str, x:int):
 
 @app.get("/purchase/{unique_id}")
 def purchase_more_messages(unique_id: str):
-    pgpass = os.getenv("PGPASSWORD")
-    with psycopg.connect("dbname=smartypants user=twilio", sslmode='require', host=os.getenv("PGHOST"), password=pgpass, port=5432) as conn:
+    with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('SELECT tel FROM purchase_offers WHERE unique_id = %s', [unique_id])
             result = cursor.fetchone()
@@ -31,7 +29,7 @@ def purchase_more_messages(unique_id: str):
                 tel = result[0]
             else:
                 return "Invalid purchase link."
-    with psycopg.connect("dbname=smartypants user=twilio") as conn:
+    with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('''INSERT INTO purchases (tel, purchase_date, purchase_type, message_count) VALUES
                 (%(tel)s, current_timestamp, 'promotion', 100)''', {"tel": tel})

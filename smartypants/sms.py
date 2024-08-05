@@ -14,9 +14,7 @@ specific tradeoffs and common complications, but do not defer to generic platitu
 
 def load_past_messages(tel, body):
     messages = [{"role": "system", "content": PROMPT}]
-    pgpass = os.getenv("PGPASSWORD")
-    print(os.getenv("PGHOST"))
-    with psycopg.connect("dbname=smartypants user=twilio", sslmode='require', host=os.getenv("PGHOST"), password=pgpass, port=5432) as conn:
+    with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('select is_user, body from messages where tel = %s order by sent asc', [tel])
             rows = cursor.fetchall()
@@ -34,15 +32,13 @@ def complete(messages):
 
 def generate_purchase_url(tel):
     unique_id = str(uuid.uuid4())
-    pgpass = os.getenv("PGPASSWORD")
-    with psycopg.connect("dbname=smartypants user=twilio", sslmode='require', host=os.getenv("PGHOST"), password=pgpass, port=5432) as conn:
+    with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('''INSERT INTO purchase_offers (unique_id, tel) VALUES (%s, %s)''', (unique_id, tel))
     return f"http://example.com/purchase/{unique_id}"
 
 def check_message_limit(tel):
-    pgpass = os.getenv("PGPASSWORD")
-    with psycopg.connect("dbname=smartypants user=twilio", sslmode='require', host=os.getenv("PGHOST"), password=pgpass, port=5432) as conn:
+    with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('SELECT COUNT(*) FROM messages WHERE tel = %s', [tel])
             message_count = cursor.fetchone()[0]
@@ -56,7 +52,7 @@ def record_new_message(tel, body, completion):
     if check_message_limit(tel):
         purchase_url = generate_purchase_url(tel)
         completion += f"\n\nYou have exceeded your message limit. Please purchase more messages here: {purchase_url}"
-    with psycopg.connect("dbname=smartypants user=twilio") as conn:
+    with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('''insert into messages (tel, is_user, sent, body) values
                 (%(tel)s, true, current_timestamp, %(body)s),
