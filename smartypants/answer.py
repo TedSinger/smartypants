@@ -26,3 +26,7 @@ def complete(messages):
         messages=messages
     )
     return completion.choices[0].message.content
+
+def answer(From, Body):
+    messages = load_past_messages(From, Body)
+    return complete(messages)
