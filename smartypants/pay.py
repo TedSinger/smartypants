@@ -5,11 +5,13 @@ from twilio.twiml.messaging_response import MessagingResponse
 def apply_gift(unique_id):
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute('SELECT tel FROM purchase_offers WHERE unique_id = %s', [unique_id])
+            cursor.execute('SELECT tel, is_used FROM purchase_offers WHERE unique_id = %s', [unique_id])
             result = cursor.fetchone()
             if not result:
                 raise ValueError("Invalid unique_id")
-            tel = result[0]
+            tel, is_used = result
+            if is_used:
+                raise ValueError("This offer has already been used")
             cursor.execute('''INSERT INTO purchases (tel, purchase_date, purchase_type, message_count) VALUES
                 (%(tel)s, current_timestamp, 'promotion', 100)''', {"tel": tel})
             cursor.execute('UPDATE purchase_offers SET is_used = TRUE WHERE unique_id = %s', [unique_id])
