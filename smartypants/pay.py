@@ -2,16 +2,18 @@ import uuid
 from db import get_db_connection
 from twilio.twiml.messaging_response import MessagingResponse
 
-def apply_gift(tel):
+def apply_gift(unique_id):
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('''INSERT INTO purchases (tel, purchase_date, purchase_type, message_count) VALUES
                 (%(tel)s, current_timestamp, 'promotion', 100)''', {"tel": tel})
+
+def create_gift_offer(tel):
     unique_id = str(uuid.uuid4())
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('''INSERT INTO purchase_offers (unique_id, tel) VALUES (%s, %s)''', (unique_id, tel))
-    return f"https://smartypants.onrender.com/purchase/{unique_id}"
+    return f"https://smartypants.onrender.com/smartypants/purchase/{unique_id}"
 
 def check_message_limit(tel):
     with get_db_connection() as conn:
