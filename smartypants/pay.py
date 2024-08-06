@@ -12,6 +12,7 @@ def apply_gift(unique_id):
             tel = result[0]
             cursor.execute('''INSERT INTO purchases (tel, purchase_date, purchase_type, message_count) VALUES
                 (%(tel)s, current_timestamp, 'promotion', 100)''', {"tel": tel})
+            cursor.execute('UPDATE purchase_offers SET is_used = TRUE WHERE unique_id = %s', [unique_id])
 
 def create_gift_offer(tel):
     unique_id = str(uuid.uuid4())
