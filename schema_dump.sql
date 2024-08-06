@@ -21,7 +21,8 @@ ALTER TABLE public.messages OWNER TO twilio;
 CREATE TABLE public.purchase_offers (
     unique_id uuid NOT NULL,
     tel character varying(20) NOT NULL,
-    offer_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+    offer_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    is_used boolean DEFAULT false NOT NULL
 );
 ALTER TABLE public.purchase_offers OWNER TO twilio;
 CREATE TABLE public.purchases (
