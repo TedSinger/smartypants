@@ -1,6 +1,6 @@
 from fasthtml.common import fast_app, serve, Html, Head, Title, Body, H1, P
 from smartypants.answer import answer
-from smartypants.pay import record_new_message, generate_purchase_url, check_message_limit
+from smartypants.pay import record_new_message, generate_purchase_url, check_message_limit, apply_gift
 from db import get_db_connection
 from twilio.twiml.messaging_response import MessagingResponse
 
@@ -30,7 +30,10 @@ def homepage():
         )
     )
 
-@app.get("/purchase/{unique_id}")
+@app.post("/apply_gift/{tel}")
+def apply_gift_route(tel: str):
+    apply_gift(tel)
+    return "Purchase successful. You have been credited with 100 messages."
 def purchase_more_messages(unique_id: str):
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
@@ -40,8 +43,15 @@ def purchase_more_messages(unique_id: str):
                 tel = result[0]
             else:
                 return "Invalid purchase link."
-    with get_db_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute('''INSERT INTO purchases (tel, purchase_date, purchase_type, message_count) VALUES
-                (%(tel)s, current_timestamp, 'promotion', 100)''', {"tel": tel})
-    return "Purchase successful. You have been credited with 100 messages."
+    return Html(
+        Head(
+            Title("Purchase More Messages")
+        ),
+        Body(
+            H1("Purchase More Messages"),
+            P(f"Click the button below to apply the gift for {tel}."),
+            P(
+                f'<button hx-post="/apply_gift/{tel}" hx-swap="outerHTML">Apply Gift</button>'
+            )
+        )
+    )
