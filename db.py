@@ -1,16 +1,20 @@
 import os
 from psycopg.rows import namedtuple_row
-import psycopg
 from psycopg_pool import ConnectionPool
 
-# Initialize connection pool
-pgpass = os.getenv("PGPASSWORD")
 
 _POOL = []
+
+
 def get_pool():
     if not _POOL:
         _POOL.append(ConnectionPool(
-            conninfo="dbname=smartypants user=twilio password={pgpass} host={os.getenv('PGHOST')} port=5432 sslmode=require"
+            conninfo=f"postgresql://twilio:{os.getenv('PGPASSWORD')}@{os.getenv('PGHOST')}:5432",
+            kwargs={
+                'sslmode': "require",
+                'dbname': "smartypants"
+            },
+            open=True
         ))
     return _POOL[0]
 
