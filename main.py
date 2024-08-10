@@ -12,7 +12,7 @@ htmx = Script(src="https://unpkg.com/htmx.org@2.0.1",
               crossorigin="anonymous")
 
 
-@rt("/smartypants/sms")
+@rt("/smartypants/sms", methods=["GET", "POST"])
 def post(From: str, Body: str):
     resp = MessagingResponse()
     if check_message_limit(From):

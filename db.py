@@ -15,7 +15,7 @@ def get_db_connection():
 
 
 def q(cursor, query, *args) -> [namedtuple_row]:
-    cursor.execute(query, [args] if args else [])
+    cursor.execute(query, args)
     cursor.row_factory = namedtuple_row
     return cursor.fetchall()
 
