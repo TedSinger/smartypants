@@ -1,17 +1,13 @@
 import os
 from psycopg.rows import namedtuple_row
 import psycopg
+from psycopg_pool import ConnectionPool
 
+
+from main import pool
 
 def get_db_connection():
-    pgpass = os.getenv("PGPASSWORD")
-    return psycopg.connect(
-        "dbname=smartypants user=twilio",
-        sslmode='require',
-        host=os.getenv("PGHOST"),
-        password=pgpass,
-        port=5432
-    )
+    return pool.getconn()
 
 
 def q(cursor, query, *args) -> [namedtuple_row]:

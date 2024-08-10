@@ -1,11 +1,28 @@
 from fasthtml.common import fast_app, Html, Head, Title, Body, H1, P, Button, Script
 from smartypants.answer import answer
+import psycopg
+from psycopg_pool import ConnectionPool
+import os
 from smartypants.pay import record_new_message, create_gift_offer, \
     check_message_limit, apply_gift
 from db import get_db_connection, q
 from twilio.twiml.messaging_response import MessagingResponse
 
 app, rt = fast_app()
+
+# Initialize connection pool
+pgpass = os.getenv("PGPASSWORD")
+pool = ConnectionPool(
+    conninfo="dbname=smartypants user=twilio password={pgpass} host={os.getenv('PGHOST')} port=5432 sslmode=require"
+)
+
+@app.on_event("startup")
+async def startup():
+    pool.open()
+
+@app.on_event("shutdown")
+async def shutdown():
+    pool.close()
 
 htmx = Script(src="https://unpkg.com/htmx.org@2.0.1",
               integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/",

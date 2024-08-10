@@ -1,6 +1,7 @@
 python-dotenv
 openai
 psycopg
+psycopg_pool
 twilio
 uvicorn
 python-fasthtml
