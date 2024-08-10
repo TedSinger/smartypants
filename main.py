@@ -40,25 +40,22 @@ def get():
 
 @rt("/smartypants/apply_gift/{unique_id}")
 def post(unique_id: str):
-    result = apply_gift(unique_id)
-    if result == "invalid":
-        return "Unknown purchase offer"
-    elif result == "expired":
-        return "You have already been credited this gift"
-    else:
+    try:
+        apply_gift(unique_id)
         return "Purchase successful. You have been credited with 100 messages."
+    except ValueError as e:
+        return str(e)
 
 
 @rt("/smartypants/purchase/{unique_id}")
 def get(unique_id: str):
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute('SELECT tel FROM purchase_offers WHERE unique_id = %s', [unique_id])
-            result = cursor.fetchone()
+            result = q(cursor, 'SELECT tel FROM purchase_offers WHERE unique_id = %s', unique_id)
             if not result:
                 return "Invalid purchase link."
             else:
-                tel, = result
+                tel = result[0][0]
     return Html(
         Head(
             Title("Purchase More Messages"),
