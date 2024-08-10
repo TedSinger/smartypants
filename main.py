@@ -5,24 +5,19 @@ from psycopg_pool import ConnectionPool
 import os
 from smartypants.pay import record_new_message, create_gift_offer, \
     check_message_limit, apply_gift
-from db import get_db_connection, q
+from db import get_db_connection, q, get_pool
 from twilio.twiml.messaging_response import MessagingResponse
 
 app, rt = fast_app()
 
-# Initialize connection pool
-pgpass = os.getenv("PGPASSWORD")
-pool = ConnectionPool(
-    conninfo="dbname=smartypants user=twilio password={pgpass} host={os.getenv('PGHOST')} port=5432 sslmode=require"
-)
 
 @app.on_event("startup")
 async def startup():
-    pool.open()
+    get_pool().open()
 
 @app.on_event("shutdown")
 async def shutdown():
-    pool.close()
+    get_pool().close()
 
 htmx = Script(src="https://unpkg.com/htmx.org@2.0.1",
               integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/",
@@ -34,7 +29,7 @@ def post(From: str, Body: str):
     resp = MessagingResponse()
     if check_message_limit(From):
         purchase_url = create_gift_offer(From)
-        resp.message(f"Message limit exceeded. Please purchase more messages: {purchase_url}")
+        resp.message(f"This service costs money to run. Can you help chip in? {purchase_url}")
     else:
         completion = answer(From, Body)
         resp.message(completion)
@@ -77,7 +72,7 @@ def get(unique_id: str):
         ),
         Body(
             H1("Purchase More Messages"),
-            P(f"Click the button below to apply the gift for {result[0].tel}."),
+            P(f"I don't know how to accept money yet. So click the button for more free messages for {result[0].tel}."),
             P(
                 Button("Apply Gift",
                        hx_post=f"/smartypants/apply_gift/{unique_id}",
