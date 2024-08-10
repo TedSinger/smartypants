@@ -2,7 +2,7 @@ from fasthtml.common import fast_app, Html, Head, Title, Body, H1, P, Button, Sc
 from smartypants.answer import answer
 from smartypants.pay import record_new_message, create_gift_offer, \
     check_message_limit, apply_gift
-from db import get_db_connection
+from db import get_db_connection, q
 from twilio.twiml.messaging_response import MessagingResponse
 
 app, rt = fast_app()
@@ -49,13 +49,10 @@ def post(unique_id: str):
 
 @rt("/smartypants/purchase/{unique_id}")
 def get(unique_id: str):
-    with get_db_connection() as conn:
-        with conn.cursor() as cursor:
-            result = q(cursor, 'SELECT tel FROM purchase_offers WHERE unique_id = %s', unique_id)
-            if not result:
-                return "Invalid purchase link."
-            else:
-                tel = result[0][0]
+    with get_db_connection() as conn, conn.cursor() as cursor:
+        result = q(cursor, 'SELECT tel FROM purchase_offers WHERE unique_id = %s', unique_id)
+        if not result:
+            return "Invalid purchase link."
     return Html(
         Head(
             Title("Purchase More Messages"),
@@ -63,9 +60,12 @@ def get(unique_id: str):
         ),
         Body(
             H1("Purchase More Messages"),
-            P(f"Click the button below to apply the gift for {tel}."),
+            P(f"Click the button below to apply the gift for {result[0].tel}."),
             P(
-                Button("Apply Gift", hx_post=f"/smartypants/apply_gift/{unique_id}", hx_swap="outerHTML", hx_trigger="click")
+                Button("Apply Gift",
+                       hx_post=f"/smartypants/apply_gift/{unique_id}",
+                       hx_swap="outerHTML",
+                       hx_trigger="click")
             )
         )
     )
