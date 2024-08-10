@@ -1,4 +1,4 @@
-from fasthtml.common import fast_app, Html, Head, Title, Body, H1, P, Button, Script
+from fasthtml.common import fast_app, Html, Head, Title, Body, H1, P, Button, Script, Form, Input
 from smartypants.answer import answer
 from smartypants.pay import record_new_message, create_gift_offer, \
     check_message_limit, apply_gift
@@ -37,6 +37,22 @@ def get():
         )
     )
 
+
+@rt("/smartypants/test_sms")
+def get():
+    return Html(
+        Head(
+            Title("Test SmartyPants SMS")
+        ),
+        Body(
+            H1("Test SmartyPants SMS"),
+            Form(
+                Input(type="text", name="From", placeholder="Enter your phone number"),
+                Input(type="text", name="Body", placeholder="Enter your message"),
+                Button("Send", type="submit")
+            )
+        )
+    )
 
 @rt("/smartypants/apply_gift/{unique_id}")
 def post(unique_id: str):
