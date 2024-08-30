@@ -20,7 +20,7 @@ def load_past_messages(tel, body):
             summary_end = row.end_message_sent
         rows = q(cursor, 'select is_user, body from messages where tel = %s and sent > %s order by sent asc', tel, summary_end)
         ctx.system(PROMPT)
-        for row in rows:
+        for row in rows[-50:]:
             if row.is_user:
                 ctx.user(row.body)
             else:
