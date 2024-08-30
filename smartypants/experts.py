@@ -4,18 +4,21 @@ from smartypants.base import LLMContext, client
 import json
 
 
-class _EXPERTS_ENUM(enum.Enum):
-    general: str = "general"
-    math: str = "math"
-    religion: str = "religion"
-    smartypants: str = "smartypants"
+Experts = [
+    ("general", "Anything not suited to one of the more specialized experts"),
+    ("math", "Mathematics, from grade school arithmetic through algebraic topology"),
+    ("religion", "Holy texts, morality, and myth"),
+    ("smartypants", "The SMS service through which the user is interacting with you. Its pricing, policies, and functionality")
+]
 
-EXPERTS = {
-    _EXPERTS_ENUM.general: "Anything not suited to one of the more specialized experts",
-    _EXPERTS_ENUM.math: "Mathematics, from grade school arithmetic through algebraic topology",
-    _EXPERTS_ENUM.religion: "Holy texts, morality, and myth",
-    _EXPERTS_ENUM.smartypants: "The SMS service through which the user is interacting with you. Its pricing, policies, and functionality"
-}
+class _EXPERTS_ENUM(enum.Enum):
+    @classmethod
+    def from_list(cls, experts_list):
+        return cls('Experts', {name: name for name, _ in experts_list})
+
+_EXPERTS_ENUM = _EXPERTS_ENUM.from_list(Experts)
+
+EXPERTS = {getattr(_EXPERTS_ENUM, name): description for name, description in Experts}
 
 class ExpertSchema(BaseModel):
     expert: _EXPERTS_ENUM
