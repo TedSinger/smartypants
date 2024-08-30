@@ -21,7 +21,7 @@ def get_pool():
 
 
 def get_db_connection():
-    return get_pool().getconn()
+    return get_pool().connection()
 
 
 def q(cursor, query, *args) -> List[namedtuple_row]:
