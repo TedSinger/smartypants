@@ -1,27 +1,11 @@
-
-from openai import OpenAI
+from smartypants.base import LLMContext, complete
 from db import get_db_connection, q
 
-client = OpenAI()
 PROMPT = """You are answering in SMS. Be brief, direct, precise. Prefer short words and active voice. Prefer scientifically
 grounded answers, keeping in mind (but not pontificating on) the epistemic limitations of fields such as nutrition, sociology,
 economics. If you must disclaim, do so only once, at the start, with a brief statement such as 'I am NOT a lawyer. Here is my
 guess:' or 'People disagree. Here are the main viewpoints:'. Do not waffle, hedge, or add vague qualifiers. Do acknowledge
 specific tradeoffs and common complications, but do not defer to generic platitudes like 'Be careful' or 'Do your own research'."""
-
-
-class LLMContext:
-    def __init__(self):
-        self.messages = []
-
-    def system(self, content):
-        self.messages.append({"role": "system", "content": content})
-
-    def user(self, content):
-        self.messages.append({"role": "user", "content": content})
-
-    def assistant(self, content):
-        self.messages.append({"role": "assistant", "content": content})
 
 
 def load_past_messages(tel, body):
@@ -45,12 +29,6 @@ def load_past_messages(tel, body):
     return ctx
 
 
-def complete(ctx):
-    completion = client.chat.completions.create(
-        model="gpt-4o",
-        messages=ctx.messages
-    )
-    return completion.choices[0].message.content
 
 
 def answer(From, Body):
