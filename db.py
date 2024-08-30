@@ -1,4 +1,5 @@
 import os
+from typing import List
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
 
@@ -23,7 +24,7 @@ def get_db_connection():
     return get_pool().getconn()
 
 
-def q(cursor, query, *args) -> [namedtuple_row]:
+def q(cursor, query, *args) -> List[namedtuple_row]:
     cursor.execute(query, args)
     cursor.row_factory = namedtuple_row
     return cursor.fetchall()
