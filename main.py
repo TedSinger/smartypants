@@ -68,8 +68,6 @@ def get(unique_id: str):
             H1("Quick Survey"),
             P("Please answer these two questions to get more free messages."),
             Form(
-                hx_post=f"/smartypants/apply_gift/{unique_id}",
-                hx_swap="outerHTML",
                 Fieldset(
                     Legend("How disappointed would you be if you couldn't use this service anymore?"),
                     Div(
@@ -89,7 +87,9 @@ def get(unique_id: str):
                     Legend("What holds you back from using this service more?"),
                     Textarea(name="feedback", rows="4", cols="50")
                 ),
-                Button("Submit Survey and Apply Gift", type="submit")
+                Button("Submit Survey and Apply Gift", type="submit"),
+                hx_post=f"/smartypants/apply_gift/{unique_id}",
+                hx_swap="outerHTML",
             )
         )
     )
