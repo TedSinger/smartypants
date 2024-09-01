@@ -45,10 +45,10 @@ def get():
 
 
 @rt("/smartypants/apply_gift/{unique_id}")
-def post(unique_id: str):
+def post(unique_id: str, disappointment: str, feedback: str):
     try:
-        apply_gift(unique_id)
-        return "Purchase successful. You have been credited with 100 messages."
+        apply_gift(unique_id, disappointment, feedback)
+        return "Thank you for your feedback. You have been credited with 100 messages."
     except ValueError as e:
         return str(e)
 
@@ -61,17 +61,35 @@ def get(unique_id: str):
             return "Invalid purchase link."
     return Html(
         Head(
-            Title("Purchase More Messages"),
+            Title("Survey"),
             htmx
         ),
         Body(
-            H1("Purchase More Messages"),
-            P(f"I don't know how to accept money yet. So click the button for more free messages for {result[0].tel}."),
-            P(
-                Button("Apply Gift",
-                       hx_post=f"/smartypants/apply_gift/{unique_id}",
-                       hx_swap="outerHTML",
-                       hx_trigger="click")
+            H1("Quick Survey"),
+            P("Please answer these two questions to get more free messages."),
+            Form(
+                hx_post=f"/smartypants/apply_gift/{unique_id}",
+                hx_swap="outerHTML",
+                Fieldset(
+                    Legend("How disappointed would you be if you couldn't use this service anymore?"),
+                    Div(
+                        Input(type="radio", name="disappointment", value="very", id="very"),
+                        Label("Very disappointed", for_="very")
+                    ),
+                    Div(
+                        Input(type="radio", name="disappointment", value="somewhat", id="somewhat"),
+                        Label("Somewhat disappointed", for_="somewhat")
+                    ),
+                    Div(
+                        Input(type="radio", name="disappointment", value="not", id="not"),
+                        Label("Not disappointed", for_="not")
+                    )
+                ),
+                Fieldset(
+                    Legend("What holds you back from using this service more?"),
+                    Textarea(name="feedback", rows="4", cols="50")
+                ),
+                Button("Submit Survey and Apply Gift", type="submit")
             )
         )
     )

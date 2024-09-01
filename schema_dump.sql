@@ -32,6 +32,18 @@ CREATE TABLE public.purchases (
     message_count integer
 );
 ALTER TABLE public.purchases OWNER TO twilio;
+CREATE TABLE public.summaries (
+    body text,
+    tel character varying(20),
+    end_message_sent timestamp without time zone
+);
+ALTER TABLE public.summaries OWNER TO twilio;
+CREATE TABLE public.survey_responses (
+    tel character varying(20),
+    disappointment character varying(8),
+    feedback text
+);
+ALTER TABLE public.survey_responses OWNER TO twilio;
 ALTER TABLE ONLY public.purchase_offers
     ADD CONSTRAINT purchase_offers_pkey PRIMARY KEY (unique_id);
 CREATE INDEX messages_tel ON public.messages USING btree (tel);

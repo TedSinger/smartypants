@@ -2,7 +2,7 @@ import uuid
 from db import get_db_connection, q_one
 
 
-def apply_gift(unique_id):
+def apply_gift(unique_id, disappointment, feedback):
     with get_db_connection() as conn, conn.cursor() as cursor:
         offer = q_one(cursor, 'SELECT tel, is_used FROM purchase_offers WHERE unique_id = %s', unique_id)
         if offer.is_used:
@@ -10,6 +10,9 @@ def apply_gift(unique_id):
         cursor.execute('''INSERT INTO purchases (tel, purchase_date, purchase_type, message_count) VALUES
             (%(tel)s, current_timestamp, 'promotion', 100)''', {"tel": offer.tel})
         cursor.execute('UPDATE purchase_offers SET is_used = TRUE WHERE unique_id = %s', [unique_id])
+        cursor.execute('''INSERT INTO survey_responses (tel, disappointment, feedback) VALUES
+            (%(tel)s, %(disappointment)s, %(feedback)s)''', 
+            {"tel": offer.tel, "disappointment": disappointment, "feedback": feedback})
 
 
 def create_gift_offer(tel):
