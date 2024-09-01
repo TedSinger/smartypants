@@ -1,5 +1,6 @@
 from smartypants.base import LLMContext, complete
 from db import get_db_connection, q
+import json
 
 PROMPT = """You are answering in SMS. Be brief, direct, precise. Prefer short words and active voice. Prefer scientifically
 grounded answers, keeping in mind (but not pontificating on) the epistemic limitations of fields such as nutrition, sociology,
@@ -13,10 +14,11 @@ def load_past_messages(tel, body):
     with get_db_connection() as conn, conn.cursor() as cursor:
         rows = q(cursor, 'select end_message_sent, body from summaries where tel = %s order by end_message_sent asc', tel)
         if rows:
-            ctx.system("The following are summaries of what you have learned about your counterpart over your conversation")
+            ctx.system("The following are your estimates of your counterparts knowledge of various topics:")
         summary_end = '1970-01-01'
         for row in rows:
-            ctx.system(row.body)
+            content = '\n'.join([f'{part["domain"]}: {part["depth"]} (confidence {part["confidence"]:.1f})' for part in row.body])
+            ctx.system(content)
             summary_end = row.end_message_sent
         rows = q(cursor, 'select is_user, body from messages where tel = %s and sent > %s order by sent asc', tel, summary_end)
         ctx.system(PROMPT)
