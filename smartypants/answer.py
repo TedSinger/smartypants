@@ -1,6 +1,8 @@
 from smartypants.base import LLMContext, complete
 from db import get_db_connection, q
 import json
+from smartypants.summarize import get_summary
+
 
 PROMPT = """You are answering in SMS. Be brief, direct, precise. Prefer short words and active voice. Prefer scientifically
 grounded answers, keeping in mind (but not pontificating on) the epistemic limitations of fields such as nutrition, sociology,
@@ -9,17 +11,14 @@ guess:' or 'People disagree. Here are the main viewpoints:'. Do not waffle, hedg
 specific tradeoffs and common complications, but do not defer to generic platitudes like 'Be careful' or 'Do your own research'."""
 
 
-def load_past_messages(tel, body):
+def load_past_messages(tel, body) -> LLMContext:
     ctx = LLMContext()
+    summary, summary_end = get_summary(tel)
+    if summary:
+        ctx.system("The following are your previous estimates of your counterpart's knowledge of various topics:")
+        ctx.system(summary)
+    
     with get_db_connection() as conn, conn.cursor() as cursor:
-        rows = q(cursor, 'select end_message_sent, body from summaries where tel = %s order by end_message_sent asc', tel)
-        if rows:
-            ctx.system("The following are your estimates of your counterparts knowledge of various topics:")
-        summary_end = '1970-01-01'
-        for row in rows:
-            content = '\n'.join([f'{part["domain"]}: {part["depth"]} (confidence {part["confidence"]:.1f})' for part in row.body])
-            ctx.system(content)
-            summary_end = row.end_message_sent
         rows = q(cursor, 'select is_user, body from messages where tel = %s and sent > %s order by sent asc', tel, summary_end)
         ctx.system(PROMPT)
         for row in rows[-50:]:
@@ -29,7 +28,6 @@ def load_past_messages(tel, body):
                 ctx.assistant(row.body)
     ctx.user(body)
     return ctx
-
 
 
 def answer(From, Body):

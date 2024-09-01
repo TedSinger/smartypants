@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List, Tuple
 import enum
 import json
+import datetime
 
 class Depth(enum.Enum):
     unaware = "unaware"
@@ -52,3 +53,14 @@ def summarize(tel):
 
     with get_db_connection() as conn, conn.cursor() as cursor:
         cursor.execute('insert into summaries (body, tel, end_message_sent) values (%s, %s, %s)', (json.dumps(resp), tel, message_end))
+
+
+def get_summary(tel) -> (str, datetime):
+    with get_db_connection() as conn, conn.cursor() as cursor:
+        rows = q(cursor, 'select end_message_sent, body from summaries where tel = %s order by end_message_sent asc', tel)
+
+    if not rows:
+        return '', datetime.datetime(1970, 1, 1)
+    for row in rows:
+        content = '\n'.join([f'{part["domain"]}: {part["depth"]} (confidence {part["confidence"]:.1f})' for part in row.body])
+        return content, row.end_message_sent
