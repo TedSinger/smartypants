@@ -33,7 +33,7 @@ CREATE TABLE public.purchases (
 );
 ALTER TABLE public.purchases OWNER TO twilio;
 CREATE TABLE public.summaries (
-    body text,
+    body jsonb,
     tel character varying(20),
     end_message_sent timestamp without time zone
 );
