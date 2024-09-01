@@ -1,4 +1,4 @@
-from fasthtml.common import fast_app, Html, Head, Title, Body, H1, P, Button, Script
+from fasthtml.common import fast_app, Html, Head, Title, Body, H1, P, Button, Script, Form, Legend, Fieldset, Textarea, Div, Label, Input
 from smartypants.answer import answer
 from smartypants.pay import record_new_message, create_gift_offer, \
     check_message_limit, apply_gift
