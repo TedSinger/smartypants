@@ -11,11 +11,11 @@ class GenericExpert:
     def complete(self, ctx):
         return complete(ctx)
 
-class MathExpert:
+class MathExpert(GenericExpert):
     name = "math"
     summary = "Mathematics, from grade school arithmetic through algebraic topology"
 
-class ReligionExpert:
+class ReligionExpert(GenericExpert):
     name = "religion"
     summary = "Holy texts, morality, and myth"
 
