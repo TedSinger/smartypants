@@ -1,7 +1,7 @@
 from smartypants.base import LLMContext, complete
 from db import get_db_connection, q
 import json
-from smartypants.summarize import get_summary
+from smartypants.summaries import get_summary
 
 
 PROMPT = """You are answering in SMS. Be brief, direct, precise. Prefer short words and active voice. Prefer scientifically
