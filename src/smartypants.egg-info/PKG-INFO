@@ -3,3 +3,10 @@ Name: smartypants
 Version: 0.1.0
 Summary: SMS GPT
 Author-email: Ted Singer <github@fernmyth.net>
+Requires-Dist: python-dotenv
+Requires-Dist: openai
+Requires-Dist: psycopg
+Requires-Dist: psycopg_pool
+Requires-Dist: twilio
+Requires-Dist: uvicorn
+Requires-Dist: python-fasthtml

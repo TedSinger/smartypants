@@ -10,4 +10,5 @@ src/smartypants/summaries.py
 src/smartypants.egg-info/PKG-INFO
 src/smartypants.egg-info/SOURCES.txt
 src/smartypants.egg-info/dependency_links.txt
+src/smartypants.egg-info/requires.txt
 src/smartypants.egg-info/top_level.txt
