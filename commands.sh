@@ -5,12 +5,12 @@ save_db_schema() {
 }
 
 run () {
-    uvicorn --host 0.0.0.0 main:app
+    uvicorn --host 0.0.0.0 smartypants.main:app
 }
 
 send_mock_sms() {
     local message=$1
-    curl -X POST "http://localhost:8000/sms" \
+    curl -X POST "http://localhost:8000/smartypants/sms" \
         -H "Content-Type: application/x-www-form-urlencoded" \
         -d "From=+1234567890&Body=${message}"
 }

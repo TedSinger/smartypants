@@ -6,3 +6,5 @@ smartypants/__pycache__
 /__pycache__/
 /.sesskey
 /.env
+
+build/lib/smartypants

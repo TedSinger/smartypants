@@ -2,7 +2,7 @@ from fasthtml.common import fast_app, Html, Head, Title, Body, H1, P, Button, Sc
 from smartypants.answer import answer
 from smartypants.pay import record_new_message, create_gift_offer, \
     check_message_limit, apply_gift
-from db import get_db_connection, q, get_pool
+from smartypants.db import get_db_connection, q, get_pool
 from twilio.twiml.messaging_response import MessagingResponse
 
 app, rt = fast_app()

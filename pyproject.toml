@@ -1,0 +1,16 @@
+[project]
+name = "smartypants"
+version = "0.1.0"
+description = "SMS GPT"
+authors = [{ name = "Ted Singer", email = "github@fernmyth.net" }]
+
+[dependencies]
+python = ">=3.10"
+python-dotenv = "*"
+openai = "*"
+psycopg = "*"
+psycopg_pool = "*"
+twilio = "*"
+uvicorn = "*"
+python-fasthtml = "*"
+smartypants = { path = "." }

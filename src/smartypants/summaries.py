@@ -1,5 +1,5 @@
 from smartypants.base import LLMContext, complete, client
-from db import get_db_connection, q
+from smartypants.db import get_db_connection, q
 from pydantic import BaseModel
 from typing import List, Tuple
 import enum

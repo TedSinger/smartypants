@@ -1,5 +1,5 @@
 import uuid
-from db import get_db_connection, q_one
+from smartypants.db import get_db_connection, q_one
 
 
 def apply_gift(unique_id, disappointment, feedback):

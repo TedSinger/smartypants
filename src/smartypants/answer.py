@@ -1,5 +1,5 @@
 from smartypants.base import LLMContext, complete
-from db import get_db_connection, q
+from smartypants.db import get_db_connection, q
 import json
 from smartypants.summaries import get_summary
 
