@@ -9,10 +9,11 @@ run () {
 }
 
 send_mock_sms() {
-    local message=$1
+    local message="$*"
     curl -X POST "http://localhost:8000/smartypants/sms" \
         -H "Content-Type: application/x-www-form-urlencoded" \
-        -d "From=+1234567890&Body=${message}"
+        -d "From=+1234567890" \
+        --data-urlencode "Body=${message}"
 }
 
 
