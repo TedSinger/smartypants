@@ -8,4 +8,12 @@ run () {
     uvicorn --host 0.0.0.0 main:app
 }
 
+send_mock_sms() {
+    local message=$1
+    curl -X POST "http://localhost:8000/sms" \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        -d "From=+1234567890&Body=${message}"
+}
+
+
 $@

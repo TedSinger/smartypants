@@ -1,6 +1,7 @@
 import os
 from twilio.rest import Client
 
+#found at https://console.twilio.com/ main page
 account_sid = os.environ["TWILIO_ACCOUNT_SID"]
 auth_token = os.environ["TWILIO_AUTH_TOKEN"]
 number_id = os.environ["TWILIO_NUMBER_ID"]
@@ -12,5 +13,5 @@ client = Client(account_sid, auth_token)
 client.incoming_phone_numbers(
     number_id
 ).update(
-    sms_url="https://example.com/sms",
+    sms_url="https://smartypants.onrender.com/sms",
 )
