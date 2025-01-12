@@ -20,7 +20,7 @@ def create_gift_offer(tel):
     with get_db_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute('''INSERT INTO purchase_offers (unique_id, tel) VALUES (%s, %s)''', (unique_id, tel))
-    return f"https://smartypants.onrender.com/smartypants/purchase/{unique_id}"
+    return f"https://smartypants.fernmyth.net/smartypants/purchase/{unique_id}"
 
 
 def check_message_limit(tel):
